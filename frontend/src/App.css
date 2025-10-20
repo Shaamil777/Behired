@@ -1,0 +1,5 @@
+body {
+  background-color: #000; /* Prevents white flash before React renders */
+  scroll-behavior: smooth;
+  overscroll-behavior: none;
+}
