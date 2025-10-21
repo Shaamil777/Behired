@@ -1,18 +1,29 @@
-import React from "react";
-import { Navigate } from "react-router-dom";
+  import React from "react";
+  import { Navigate, Outlet } from "react-router-dom";
+  import { getToken, getUser, getAdmin, isTokenExpired, logout } from "../utils/tokenUtils";
 
-interface ProtectedRouteProps {
-  children: React.ReactNode;
-}
-
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    return <Navigate to="/login" replace />;
+  interface ProtectedRouteProps {
+    role: "user" | "admin";
   }
 
-  return <>{children}</>;
-};
+  export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ role }) => {
+    const token = getToken();
 
-export default ProtectedRoute;
+    // Expired token
+    if (token && isTokenExpired(token)) {
+      logout();
+      const redirectPath = role === "admin" ? "/admin/login" : "/login";
+      return <Navigate to={redirectPath} replace />;
+    }
+
+    const isAuthenticated =
+      role === "user"
+        ? !!getUser() && !!token
+        : role === "admin"
+        ? !!getAdmin() && !!token
+        : false;
+
+    const redirectPath = role === "admin" ? "/admin/login" : "/login";
+
+    return isAuthenticated ? <Outlet /> : <Navigate to={redirectPath} replace />;
+  };

@@ -2,7 +2,9 @@ import { Request,Response } from "express";
 import { AuthService } from "../services/auth.service";
 import { OTPService } from "../services/otp.service";
 import {  OAuth2Client } from "google-auth-library";
+import { AdminService } from "../services/admin.service";
 
+const adminService = new AdminService()
 const authService = new AuthService()
 const otpService = new OTPService()
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -90,4 +92,21 @@ export const verifyOTP = async(req:Request,res:Response) =>{
         res.status(400).json({message:error.message})
     }
 }
+
+export const adminLogin = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ message: "Email and password required" });
+
+    const result = await adminService.login(email, password);
+
+    res.status(200).json({
+      message: "Admin login successful",
+      admin: result.admin,
+      token: result.token,
+    });
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
+  }
+};
 

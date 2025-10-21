@@ -23,4 +23,9 @@
                 {$set:{password:hashedPassword}}
             )
         }
+
+        async findAllUsers(){
+            return await User.find({role:'user'},"-password").sort({createdAt:-1})
+        }
+
     }

@@ -1,7 +1,7 @@
 import  express  from "express";
 import {  sentOTP } from "../controllers/auth.controller";
 import { verifyOTP } from "../controllers/auth.controller";
-
+import { adminLogin } from "../controllers/auth.controller";
 import { loginUser } from "../controllers/auth.controller";
 import { GoogleAuth } from "google-auth-library";
 
@@ -15,6 +15,6 @@ router.post('/auth/verify-otp',verifyOTP)
 
 router.post('/auth/login',loginUser)
 
-
+router.post('/admin/login',adminLogin)
 
 export default router

@@ -48,7 +48,7 @@ export class AuthService {
   async login(email: string, password: string) {
     const user = await this.userRepo.findByEmail(email);
     if (!user || !user.password) throw new Error("Invalid email or password");
-
+    if (user.role!=="user") throw new Error("Account doesnt exist")
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) throw new Error("Invalid email or password");
 

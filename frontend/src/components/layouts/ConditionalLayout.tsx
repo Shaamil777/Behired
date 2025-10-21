@@ -1,22 +1,22 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
-import MainLayout from "./MainLayout";
+import { Outlet, useLocation } from "react-router-dom";
+import Navbar from "./Navbar";
 
-interface ConditionalLayoutProps {
-  children: React.ReactNode;
-}
-
-const ConditionalLayout: React.FC<ConditionalLayoutProps> = ({ children }) => {
+const ConditionalLayout: React.FC = () => {
   const location = useLocation();
   
-  // Pages that don't need the main layout
-  const noLayoutRoutes = ["/"];
-  
-  if (noLayoutRoutes.includes(location.pathname)) {
-    return <>{children}</>;
-  }
-  
-  return <MainLayout>{children}</MainLayout>;
+  // Routes where we don't want to show the MainLayout navbar
+  const routesWithoutNavbar = ["/"];
+  const shouldShowNavbar = !routesWithoutNavbar.includes(location.pathname);
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      {shouldShowNavbar && <Navbar />}
+      <main className={shouldShowNavbar ? "flex-1 pt-16" : "flex-1"}>
+        <Outlet />
+      </main>
+    </div>
+  );
 };
 
 export default ConditionalLayout;

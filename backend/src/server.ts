@@ -8,6 +8,7 @@ dotenv.config()
 import connectDB from "./config/db";
 import authRouter from "./routes/auth.routes";
 import passwordRouter from './routes/password.routes'
+import adminRouter from './routes/admin.routes'
 import { configDotenv } from "dotenv";
 
 const app = express()
@@ -29,6 +30,7 @@ connectDB()
 
 app.use("/api", authRouter);
 app.use("/api", passwordRouter)
+app.use('/api', adminRouter)
 
 app.listen(5000,()=>{
     console.log("Server running on port 5000")
