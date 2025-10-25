@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { Search, Eye, Ban, ChevronLeft, ChevronRight } from 'lucide-react';
-import { fetchAllUsers } from '../../services/admin.service';
-import { toggleUserStatus } from '../../services/admin.service';
-import toast from 'react-hot-toast';
+import React, { useEffect, useState } from "react";
+import { Search, Eye, Ban } from "lucide-react";
+import { fetchAllUsers, toggleUserStatus } from "../../services/admin.service";
+import toast from "react-hot-toast";
+import Swal from "sweetalert2";
 
 const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<any[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  // 1. Updated filter options to match the boolean state
-  const [statusFilter, setStatusFilter] = useState('Active'); // Can be 'Active', 'Inactive', or 'All'
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("Active"); // Active | Inactive | All
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
 
@@ -16,9 +15,7 @@ const UserManagement: React.FC = () => {
     const getUsers = async () => {
       try {
         const data = await fetchAllUsers();
-        console.log("Fetched users data:", data); // Debug log
 
-        // ✅ Make sure to handle correctly
         if (data && data.success && Array.isArray(data.users)) {
           setUsers(data.users);
         } else if (Array.isArray(data)) {
@@ -28,44 +25,67 @@ const UserManagement: React.FC = () => {
         }
       } catch (err) {
         console.error("Failed to load users:", err);
+        toast.error("Failed to fetch users.");
       }
     };
     getUsers();
   }, []);
 
-  // Filter users
-  const filteredUsers = users.filter(user => {
+  // Filter logic
+  const filteredUsers = users.filter((user) => {
     const fullName = `${user.firstname || ""} ${user.lastname || ""}`.trim();
     const matchesSearch =
       fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    // 2. Updated status filter logic to use user.isActive (default to true if missing)
-    const isActive = user.isActive !== false; // Assume active unless explicitly false
-    
-    const matchesStatus = 
-        statusFilter === "All" ||
-        (statusFilter === "Active" && isActive) ||
-        (statusFilter === "Inactive" && !isActive);
-    
+
+    const isActive = user.isActive !== false;
+    const matchesStatus =
+      statusFilter === "All" ||
+      (statusFilter === "Active" && isActive) ||
+      (statusFilter === "Inactive" && !isActive);
+
     return matchesSearch && matchesStatus;
   });
 
-  // Pagination logic
+  // Pagination
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedUsers = filteredUsers.slice(startIndex, startIndex + itemsPerPage);
 
-  const handleView = (user: any) => alert(`Viewing details for ${user.firstname}`);
-  const handleBan = async (user: any) => {
-  const action = user.isActive ? "ban" : "unban";
-  const confirm = window.confirm(`Are you sure you want to ${action} ${user.firstname}?`);
-  if (!confirm) return;
+  const handleView = (user: any) => {
+    Swal.fire({
+      title: `${user.firstname} ${user.lastname || ""}`,
+      html: `
+        <p><strong>Email:</strong> ${user.email}</p>
+        <p><strong>Status:</strong> ${user.isActive ? "Active" : "Inactive"}</p>
+        <p><strong>Joined:</strong> ${new Date(user.createdAt).toLocaleDateString()}</p>
+      `,
+      confirmButtonText: "Close",
+      confirmButtonColor: "#3085d6",
+      background: "#1f2937",
+      color: "#fff",
+    });
+  };
 
-  try {
-    toast.promise(
-      toggleUserStatus(user._id),
-      {
+  const handleBan = async (user: any) => {
+    const action = user.isActive ? "ban" : "unban";
+
+    const result = await Swal.fire({
+      title: `Are you sure?`,
+      text: `Do you want to ${action} ${user.firstname}?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: `Yes, ${action}`,
+      background: "#1f2937",
+      color: "#fff",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      toast.promise(toggleUserStatus(user._id), {
         loading: `${action === "ban" ? "Banning" : "Unbanning"} user...`,
         success: (data) => {
           setUsers((prev) =>
@@ -73,25 +93,36 @@ const UserManagement: React.FC = () => {
               u._id === user._id ? { ...u, isActive: !u.isActive } : u
             )
           );
-          return data.message || `User ${action === "ban" ? "banned" : "unbanned"} successfully!`;
+
+          Swal.fire({
+            title: "Success!",
+            text:
+              data.message ||
+              `User ${action === "ban" ? "banned" : "unbanned"} successfully.`,
+            icon: "success",
+            confirmButtonColor: "#3085d6",
+            background: "#1f2937",
+            color: "#fff",
+          });
+
+          return `User ${action === "ban" ? "banned" : "unbanned"} successfully!`;
         },
         error: "Action failed. Please try again.",
-      }
-    );
-  } catch (err) {
-    console.error(err);
-    toast.error("Something went wrong while updating user status.");
-  }
-};
-
+      });
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error!", "Something went wrong while updating user status.", "error");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-6">
+      {/* Search + Filter */}
       <div className="flex gap-4 mb-6">
         <div className="flex-1 relative">
           <input
             type="text"
-            placeholder="Search by Name,Email..."
+            placeholder="Search by Name or Email..."
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
@@ -104,7 +135,7 @@ const UserManagement: React.FC = () => {
           </button>
         </div>
 
-        <select 
+        <select
           value={statusFilter}
           onChange={(e) => {
             setStatusFilter(e.target.value);
@@ -112,14 +143,13 @@ const UserManagement: React.FC = () => {
           }}
           className="bg-gray-800 text-white px-6 py-3 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          {/* Filter options remain the same for UI purposes */}
           <option value="Active">Active</option>
           <option value="Inactive">Inactive</option>
           <option value="All">All</option>
         </select>
       </div>
 
-      {/* Table */}
+      {/* User Table */}
       <div className="bg-gray-800 rounded-lg overflow-hidden">
         <table className="w-full">
           <thead className="bg-gray-900">
@@ -134,24 +164,28 @@ const UserManagement: React.FC = () => {
           </thead>
           <tbody>
             {paginatedUsers.map((user, index) => {
-              // 3. Determine status based on user.isActive boolean
-              const isUserActive = user.isActive !== false; // Treat missing/null/undefined as active
+              const isUserActive = user.isActive !== false;
               const statusText = isUserActive ? "Active" : "Inactive";
               const statusColor = isUserActive ? "bg-green-500" : "bg-red-500";
-              
+
               return (
-                <tr key={user._id || index} className="border-t border-gray-700 hover:bg-gray-750">
+                <tr
+                  key={user._id || index}
+                  className="border-t border-gray-700 hover:bg-gray-750"
+                >
                   <td className="px-6 py-4 text-sm">{startIndex + index + 1}</td>
                   <td className="px-6 py-4 text-sm">
-                    {user.firstname ? `${user.firstname} ${user.lastname || ""}` : user.name}
+                    {user.firstname
+                      ? `${user.firstname} ${user.lastname || ""}`
+                      : user.name}
                   </td>
                   <td className="px-6 py-4 text-sm">{user.email}</td>
-                  <td className="px-6 py-4 text-sm">{new Date(user.createdAt).toLocaleDateString()}</td>
+                  <td className="px-6 py-4 text-sm">
+                    {new Date(user.createdAt).toLocaleDateString()}
+                  </td>
                   <td className="px-6 py-4 text-sm">
                     <span className="flex items-center gap-2">
-                      <span
-                        className={`w-2 h-2 rounded-full ${statusColor}`}
-                      ></span>
+                      <span className={`w-2 h-2 rounded-full ${statusColor}`}></span>
                       {statusText}
                     </span>
                   </td>
@@ -169,7 +203,7 @@ const UserManagement: React.FC = () => {
                         className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition-colors flex items-center gap-1"
                       >
                         <Ban size={16} />
-                        {isUserActive ? 'Ban' : 'Unban'}
+                        {isUserActive ? "Ban" : "Unban"}
                       </button>
                     </div>
                   </td>
@@ -178,7 +212,7 @@ const UserManagement: React.FC = () => {
             })}
           </tbody>
         </table>
-        {/* Pagination Controls Here */}
+        {/* (Optional) Pagination can go here */}
       </div>
     </div>
   );

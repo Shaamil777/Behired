@@ -34,7 +34,15 @@ export class AdminService {
 
   async getAllUsers(){
     const users = await this.userRepo.findAllUsers()
-    console.log(users)
     return users
+  }
+  async toggleUserStatus(userId:string){
+    const result = await this.userRepo.toggleUserStatus(userId)
+
+    const message = result.isActive
+    ? "User has been banned successfully"
+    :"User has been unbanned successfully";
+
+    return {message,user:result};
   }
 }
