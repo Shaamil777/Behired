@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import Button from "../ui/Button";
+import Button from "../common/Button";
 import { useNavigate, useLocation } from "react-router-dom";
 import { verifyOTP, sentOTP } from "../../services/otp.service";
 import toast from "react-hot-toast";
+import { setToken,setAdmin,setRole, setUser } from "../../utils/tokenUtils";
 
 const VerifyOTPForm: React.FC = () => {
   const navigate = useNavigate();
@@ -61,8 +62,8 @@ const VerifyOTPForm: React.FC = () => {
       if(response?.token){
         localStorage.setItem('token',response.token)
           if(response.user){
-            localStorage.setItem("user", JSON.stringify(response.user));
-          localStorage.setItem("role", response.user.role || "user");
+             setUser(response.user);
+             setRole(response.user.role || "user");
           }
       }
 

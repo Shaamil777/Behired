@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import Button from "../ui/Button";
-import GoogleButton from "../ui/GoogleButton";
+import Button from "../common/Button";
+import GoogleButton from "../common/GoogleButton";
 import { useNavigate } from "react-router-dom";
 import { sentOTP } from "../../services/otp.service";
 import toast from "react-hot-toast";
@@ -83,21 +83,22 @@ const RegisterForm: React.FC = () => {
     }
   };
 
-  const googleRegister = useGoogleLogin({
-    onSuccess:async (tokenResponse)=>{
-      try {
-        toast.loading("Registering with Google...", { id: "google" });
-      const res = await googleAuth(tokenResponse.access_token);
-      toast.success("Account created successfully!", { id: "google" });
-      localStorage.setItem("token", res.token);
-      localStorage.setItem("user", JSON.stringify(res.user));
-      navigate("/home", { replace: true });
-      } catch (error:any) {
-         toast.error("Google signup failed", { id: "google" });
-      }
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+        try {
+            toast.loading("Signing in with Google...", { id: "google-register" });
+            const res = await googleAuth(tokenResponse.access_token);
+            toast.success("Google registration successful", { id: "google-register" });
+            
+            localStorage.setItem("token", res.token);
+            localStorage.setItem("user", JSON.stringify(res.user));
+            navigate("/home", { replace: true });
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || "Google registration failed", { id: "google-register" });
+        }
     },
-    onError: () => toast.error("Google signup failed"),
-  })
+    onError: () => toast.error("Google registration failed")
+});
 
   return (
     <div className="w-full max-w-lg p-16 flex flex-col items-center h-full">
@@ -153,7 +154,7 @@ const RegisterForm: React.FC = () => {
       </div>
 
       <div className="w-full max-w-xs">
-        <GoogleButton onClick={()=>googleRegister()} text="Sign up with Google" />
+        <GoogleButton onClick={()=>googleLogin()} text="Sign up with Google" />
       </div>
 
     </div>

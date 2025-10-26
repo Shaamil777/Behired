@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import Button from "../ui/Button";
-import GoogleButton from "../ui/GoogleButton";
+import Button from "../common/Button";
+import GoogleButton from "../common/GoogleButton";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import {loginUser,googleAuth } from "../../services/auth.service";
 import { useGoogleLogin } from "@react-oauth/google";
+import { setRole, setToken, setUser } from "../../utils/tokenUtils";
 
 export interface LoginFormData {
     email:string,
@@ -33,10 +34,10 @@ const LoginForm: React.FC =()=>{
             const res = await loginUser(formData)
             toast.success("Login successful",{id:"login"})
              // Save JWT token
-            localStorage.setItem("token", res.token);
+            setToken(res.token);
+            setUser(res.user);
+            setRole("user"); // Or res.user.role if available
 
-            // Optionally save user info
-            localStorage.setItem("user", JSON.stringify(res.user));
 
             // Redirect after login
             navigate("/home",{replace:true}); 
@@ -46,27 +47,22 @@ const LoginForm: React.FC =()=>{
     }
 
    const googleLogin = useGoogleLogin({
-    flow: "implicit",
-    onSuccess: async (tokenResponse: any) => {
+    onSuccess: async (tokenResponse) =>{
         try {
-            toast.loading("Signing in with Google...", { id: "google" });
+            toast.loading("Signing in with google...",{id:"google-login"})
 
-            const idToken = tokenResponse.credential; // ✅ critical fix
-            if (!idToken) throw new Error("Google token not found");
+            const res = await googleAuth(tokenResponse.access_token)
+            toast.success("Google login successfull",{id:"google-login"})
+            
+            localStorage.setItem("token",res.token)
+            localStorage.setItem("user",res.user)
 
-            const res = await googleAuth(idToken);
-
-            toast.success("Google login successful!", { id: "google" });
-            localStorage.setItem("token", res.token);
-            localStorage.setItem("user", JSON.stringify(res.user));
-            navigate("/home", { replace: true });
-        } catch (error: any) {
-            toast.error("Google login failed", { id: "google" });
+            navigate("/home",{replace:true})
+        } catch (error:any) {
+            toast.error(error.response?.data?.message || "google login failed", {id:'google-login'})
         }
-    },
-    onError: () => toast.error("Google login failed"),
-    scope: "openid email profile",
-});
+    }
+   })
 
 
     return (

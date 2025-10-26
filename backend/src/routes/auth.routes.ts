@@ -15,6 +15,8 @@ router.post('/auth/verify-otp',verifyOTP)
 
 router.post('/auth/login',loginUser)
 
+
+
 router.post('/admin/login',adminLogin)
 
 export default router

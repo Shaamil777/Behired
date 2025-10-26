@@ -1,25 +1,8 @@
-
 import api from "../api/api";
+import  type { LoginFormData,LoginResponse } from "../types";
 
-export interface LoginFormData {
-    email:string,
-    password:string
-}
 
-export interface LoginReponse {
-    user:{
-        id:string,
-        firstname:string,
-        lastname:string,
-        email:string,
-        plan:string,
-        isActive:boolean,
-        startedAt:string
-    };
-    token:string
-}
-
-export const loginUser = async (data: LoginFormData): Promise<LoginReponse> =>{
+export const loginUser = async (data: LoginFormData): Promise<LoginResponse> =>{
     const response = await api.post("/auth/login",data)
     return response.data
 }

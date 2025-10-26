@@ -5,13 +5,13 @@
             return await User.findOne({email})
         }
         async createUser(data: {
-  firstname?: string;
-  lastname?: string;
+  firstname?: string | undefined;
+  lastname?: string | undefined;
   email: string;
-  password?: string;
-  isActive?: boolean;
-  startedAt?: Date;
-  plan?: string;
+  password?: string | undefined;
+  isActive?: boolean | undefined;
+  startedAt?: Date | undefined;
+  plan?: string | undefined;
   googleId?: string | null | undefined; // already done
 }) {
   return await User.create(data);

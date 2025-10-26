@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Lock, User, Eye, EyeOff } from 'lucide-react';
 import { loginAdmin } from '../../../services/admin.service';
-import { setToken, setAdmin } from '../../../utils/tokenUtils';
+import { setToken, setAdmin,setRole } from '../../../utils/tokenUtils';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
@@ -44,7 +44,9 @@ const AdminLogin: React.FC = () => {
       const res = await loginAdmin(formData);
 
       setToken(res.token);
-      setAdmin(JSON.stringify(res.admin));
+      setAdmin(res.admin);
+      setRole("admin");
+
 
       toast.success('Admin logged in successfully!', { id: 'admin-login' });
       navigate('/admin/dashboard', { replace: true });

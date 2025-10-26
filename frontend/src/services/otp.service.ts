@@ -1,16 +1,6 @@
 import api from "../api/api";
 
-export type OTPPurpose = "register" | "forgot-password";
-
-export interface VerifyOTPData {
-  email: string;
-  otp: string;
-  purpose: OTPPurpose;
-  firstname?: string;
-  lastname?: string;
-  password?: string;
-  confirmpassword?: string;
-}
+import type { OTPPurpose,VerifyOTPData } from "../types";
 
 // Send OTP
 export const sentOTP = async (data: { email: string; purpose: OTPPurpose }) => {

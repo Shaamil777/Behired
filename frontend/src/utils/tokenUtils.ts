@@ -1,4 +1,6 @@
+// tokenUtils.ts
 
+// ----- Token -----
 export const getToken = (): string | null => {
   return localStorage.getItem("token");
 };
@@ -11,37 +13,52 @@ export const removeToken = (): void => {
   localStorage.removeItem("token");
 };
 
-export const getUser = (): string | null => {
-  return localStorage.getItem("user");
+// ----- User -----
+export const getUser = (): any | null => {
+  const data = localStorage.getItem("user");
+  return data ? JSON.parse(data) : null;
 };
 
-export const setUser = (user: string): void => {
-  localStorage.setItem("user", user);
+export const setUser = (user: any): void => {
+  localStorage.setItem("user", JSON.stringify(user));
 };
 
 export const removeUser = (): void => {
   localStorage.removeItem("user");
 };
 
-export const getAdmin = (): string | null => {
-  return localStorage.getItem("admin");
+// ----- Admin -----
+export const getAdmin = (): any | null => {
+  const data = localStorage.getItem("admin");
+  return data ? JSON.parse(data) : null;
 };
 
-export const setAdmin = (admin: string): void => {
-  localStorage.setItem("admin", admin);
+export const setAdmin = (admin: any): void => {
+  localStorage.setItem("admin", JSON.stringify(admin));
 };
 
 export const removeAdmin = (): void => {
   localStorage.removeItem("admin");
 };
 
+// ----- Role -----
+export const getRole = (): string | null => {
+  return localStorage.getItem("role");
+};
+
+export const setRole = (role: string): void => {
+  localStorage.setItem("role", role);
+};
+
+export const removeRole = (): void => {
+  localStorage.removeItem("role");
+};
+
+// ----- Token Expiry -----
 export const isTokenExpired = (token: string): boolean => {
   try {
-    // Decode JWT token (assuming it's a JWT)
     const payload = JSON.parse(atob(token.split(".")[1]));
     const currentTime = Math.floor(Date.now() / 1000);
-    
-    // Check if token has expired
     return payload.exp ? payload.exp < currentTime : false;
   } catch (error) {
     console.error("Error decoding token:", error);
@@ -49,8 +66,10 @@ export const isTokenExpired = (token: string): boolean => {
   }
 };
 
+// ----- Logout -----
 export const logout = (): void => {
   removeToken();
   removeUser();
   removeAdmin();
+  removeRole();
 };

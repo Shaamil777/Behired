@@ -1,26 +1,11 @@
-import React, { useEffect } from "react";
+import type React from "react";
+import ForgotPasswordForm from "../../../components/forms/ForgotPasswordForm";
+import image from "../../../assets/Images/AuthCover.jpg"
 
-import RegisterForm from "../../components/forms/RegisterForm";
-import image from "../../assets/Images/AuthCover.jpg"
-import { useNavigate } from "react-router-dom";
-
-const RegisterPage:React.FC = () =>{
-    
-    const navigate = useNavigate()
-    useEffect(()=>{
-        const token = localStorage.getItem("token")
-            if(token){
-                navigate('/home',{replace:true})
-            }
-        
-    },[navigate])
-
+const VerifyOtpPage:React.FC=()=>{
     return (
-        // Set the entire page background to the requested color
-        <div className="h-[calc(100vh-4rem)] flex bg-[#f0f5fA] ">
-            
-            {/* RIGHT SECTION: IMAGE/PROMO AREA - Now padded on all sides */}
-            {/* The container takes the full height, and 'p-12' creates the padding/margin effect */}
+        <>
+          <div className="h-[calc(100vh-4rem)] flex bg-[#f0f5fA] ">
             <div className="hidden md:flex md:w-1/2 relative p-4 sm:p-8 lg:p-12 items-center justify-center"> 
                 
                 {/* Inner Dark Content Box: Fills the padded space, applies the dark background, and uses rounded corners */}
@@ -30,10 +15,10 @@ const RegisterPage:React.FC = () =>{
                     <img 
                         src={image} 
                         alt="Abstract professional illustration" 
-                        className="absolute inset-0 w-full h-full object-cover" 
+                        className="absolute inset-0 w-full h-full object-cover opacity-30" 
                         // Note: The 'image' variable in the code is currently importing 'react.svg'.
                         // You should replace this in your project with the actual background image path.
-                    />
+                        />
 
                     {/* Text Overlay */}
                     <div className="relative p-12 text-white z-10">
@@ -47,7 +32,7 @@ const RegisterPage:React.FC = () =>{
                 </div>
             </div>
 
-            {/* LEFT SECTION: LOGIN FORM AREA (Retaining bg-white for the card-on-background effect) */}
+             {/* LEFT SECTION: LOGIN FORM AREA (Retaining bg-white for the card-on-background effect) */}
             <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-4 sm:p-8 lg:p-16">
                 
                 {/* Form Content Wrapper */}
@@ -55,12 +40,14 @@ const RegisterPage:React.FC = () =>{
                     
                     
 
-                    {/* LoginForm Component */}
-                    <RegisterForm  />
+                    {/* forgot password form Component */}
+                    <ForgotPasswordForm  />
                 </div>
             </div>
-        </div>
+          </div>
+        </>
     )
 }
 
-export default RegisterPage;
+
+export default VerifyOtpPage

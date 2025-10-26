@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Button from "../ui/Button";
+import Button from "../common/Button";
 import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import { resetPassword } from "../../services/password.service";

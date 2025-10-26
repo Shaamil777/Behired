@@ -1,11 +1,39 @@
-import type React from "react";
-import ChangePasswordForm from "../../components/forms/ChangePasswordForm";
-import image from "../../assets/Images/AuthCover.jpg"
+import React, { useEffect } from "react";
+import LoginForm from "../../../components/forms/LoginForm";
+import image from "../../../assets/Images/AuthCover.jpg"
+import { useNavigate } from "react-router-dom";
 
-const VerifyOtpPage:React.FC=()=>{
+
+const LoginPage:React.FC = () =>{
+   
+    const navigate = useNavigate()
+    useEffect(()=>{
+        const token = localStorage.getItem('token')
+        if(token){
+            navigate("/home",{replace:true})
+        }
+    },[navigate])
+    
+
     return (
-        <>
-          <div className="h-[calc(100vh-4rem)] flex bg-[#f0f5fA] ">
+        // Set the entire page background to the requested color
+        <div className="h-[calc(100vh-4rem)] flex bg-[#f0f5fA] ">
+            
+            {/* LEFT SECTION: LOGIN FORM AREA (Retaining bg-white for the card-on-background effect) */}
+            <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-4 sm:p-8 lg:p-16">
+                
+                {/* Form Content Wrapper */}
+                <div className="w-full max-w-md">
+                    
+                    
+
+                    {/* LoginForm Component */}
+                    <LoginForm />
+                </div>
+            </div>
+
+            {/* RIGHT SECTION: IMAGE/PROMO AREA - Now padded on all sides */}
+            {/* The container takes the full height, and 'p-12' creates the padding/margin effect */}
             <div className="hidden md:flex md:w-1/2 relative p-4 sm:p-8 lg:p-12 items-center justify-center"> 
                 
                 {/* Inner Dark Content Box: Fills the padded space, applies the dark background, and uses rounded corners */}
@@ -18,7 +46,7 @@ const VerifyOtpPage:React.FC=()=>{
                         className="absolute inset-0 w-full h-full object-cover" 
                         // Note: The 'image' variable in the code is currently importing 'react.svg'.
                         // You should replace this in your project with the actual background image path.
-                        />
+                    />
 
                     {/* Text Overlay */}
                     <div className="relative p-12 text-white z-10">
@@ -31,23 +59,8 @@ const VerifyOtpPage:React.FC=()=>{
                     </div>
                 </div>
             </div>
-
-             {/* LEFT SECTION: LOGIN FORM AREA (Retaining bg-white for the card-on-background effect) */}
-            <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-4 sm:p-8 lg:p-16">
-                
-                {/* Form Content Wrapper */}
-                <div className="w-full max-w-md">
-                    
-                    
-
-                    {/* forgot password form Component */}
-                    <ChangePasswordForm  />
-                </div>
-            </div>
-          </div>
-        </>
+        </div>
     )
 }
 
-
-export default VerifyOtpPage
+export default LoginPage;

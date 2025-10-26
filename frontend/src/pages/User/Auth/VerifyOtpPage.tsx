@@ -1,6 +1,6 @@
 import type React from "react";
-import ForgotPasswordForm from "../../components/forms/ForgotPasswordForm";
-import image from "../../assets/Images/AuthCover.jpg"
+import VerifyOTPForm from "../../../components/forms/VerifyOTPForm";
+import image from "../../../assets/Images/AuthCover.jpg"
 
 const VerifyOtpPage:React.FC=()=>{
     return (
@@ -40,8 +40,8 @@ const VerifyOtpPage:React.FC=()=>{
                     
                     
 
-                    {/* forgot password form Component */}
-                    <ForgotPasswordForm  />
+                    {/* LoginForm Component */}
+                    <VerifyOTPForm  />
                 </div>
             </div>
           </div>

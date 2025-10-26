@@ -68,5 +68,42 @@ export class AuthService {
     };
   }
 
+  async googleLogin(data:GoogleLoginData){
+    const {email,firstname,lastname,googleId} = data
+
+    let user = await this.userRepo.findByEmail(email)
+
+    if(user){
+      if(!user.googleId){
+        user.googleId = googleId
+        await user.save()
+      }
+    }else{
+      user = await this.userRepo.createUser({
+      firstname: firstname || "User",
+      lastname: lastname || "",
+      email,
+      googleId,
+      isActive: true,
+      startedAt: new Date(),
+      password: undefined,
+    });
+  }
+
+  const token = Jwt.sign({id:user._id},JWT_SECRET,{expiresIn:"1d"})
+
+  return {
+    user:{
+      id:user._id,
+      firstname:user.firstname,
+      lastname: user.lastname,
+      email: user.email,
+      plan: user.plan,
+      isActive: user.isActive,
+      startedAt: user.startedAt,
+    },
+    token,
+  }
+  }
   
 }
