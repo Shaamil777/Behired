@@ -3,7 +3,7 @@ import { Route } from "react-router-dom";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { AdminPublicRoute } from "./PublicRoute";
 import AdminLayout from "../components/layouts/admin/AdminLayout";
-import { ROUTES } from "./routeConfig";
+
 
 // Lazy load pages
 const AdminLogin = React.lazy(() => import("../pages/Admin/Auth/AdminLogin"));
