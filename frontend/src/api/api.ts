@@ -4,10 +4,10 @@ import { getToken } from "../utils/tokenUtils";
 const API_URL = 'http://localhost:5000/api'
 
 const api = axios.create({
-    baseURL:API_URL,
-    headers:{
-        "Content-Type":"application/json"
-    }
+  baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json"
+  }
 })
 
 // ✅ Request interceptor: attach token to headers
@@ -26,11 +26,17 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Check if the user is banned based on backend error response
+    if (error.response?.data?.message === "Account has been banned") {
+      window.location.href = "/banned";
+      return Promise.reject(error);
+    }
+
     if (error.response && error.response.status === 401) {
       console.warn("Unauthorized — Token may be invalid or expired.");
       // Optional: clear token and redirect to login
       localStorage.removeItem("token");
-      window.location.href = "/login"; 
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   }

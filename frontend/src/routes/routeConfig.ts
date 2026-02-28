@@ -8,10 +8,11 @@ export const ROUTES = {
     VERIFY_OTP: '/verify-otp',
     FORGOT_PASSWORD: '/forgot-password',
     CHANGE_PASSWORD: '/change-password',
+    BANNED: '/banned',
     // PROFILE: '/profile',
     // SETTINGS: '/settings',
   },
-  
+
   // Admin routes
   ADMIN: {
     LOGIN: '/admin/login',

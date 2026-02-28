@@ -11,6 +11,7 @@ const RegisterPage = React.lazy(() => import("../pages/User/Auth/RegisterPage"))
 const VerifyOtpPage = React.lazy(() => import("../pages/User/Auth/VerifyOtpPage"));
 const ForgotPasswordPage = React.lazy(() => import("../pages/User/Auth/ForgotPasswordPage"));
 const ChangePasswordPage = React.lazy(() => import("../pages/User/Auth/ChangePasswordPage"));
+const BannedPage = React.lazy(() => import("../pages/User/BannedPage"));
 
 export const UserRoutes = () => (
   <>
@@ -28,5 +29,8 @@ export const UserRoutes = () => (
       <Route path={ROUTES.USER.HOME} element={<HomePage />} />
       {/* Add more protected routes here */}
     </Route>
+
+    {/* Shared / Independent Routes */}
+    <Route path={ROUTES.USER.BANNED} element={<BannedPage />} />
   </>
 );
