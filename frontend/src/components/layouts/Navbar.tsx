@@ -9,7 +9,7 @@ const Navbar: React.FC = () => {
   const navigate = useNavigate();
 
   // pages that should show only the logo
-  const authRoutes = ["/login", "/register", "/verify-otp", "/forgot-password"];
+  const authRoutes = ["/login", "/register", "/verify-otp", "/forgot-password", "/change-password"];
   const isAuthPage = authRoutes.includes(location.pathname);
 
   return (

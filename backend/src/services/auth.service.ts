@@ -48,6 +48,7 @@ export class AuthService {
     const user = await this.userRepo.findByEmail(email);
     if (!user || !user.password) throw new Error("Invalid email or password");
     if (user.role !== "user") throw new Error("Account doesnt exist")
+    if (!user.isActive) throw new Error("Account has been banned");
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) throw new Error("Invalid email or password");
 
@@ -104,6 +105,10 @@ export class AuthService {
 
       if (user.role !== "user") {
         throw new Error("Invalid account type");
+      }
+
+      if (!user.isActive) {
+        throw new Error("Account has been banned");
       }
 
       const token = Jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "1d" });
