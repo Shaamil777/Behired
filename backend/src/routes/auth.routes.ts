@@ -2,8 +2,7 @@ import express from "express";
 import { sentOTP } from "../controllers/auth.controller";
 import { verifyOTP } from "../controllers/auth.controller";
 import { adminLogin } from "../controllers/auth.controller";
-import { loginUser } from "../controllers/auth.controller";
-import { GoogleAuth } from "google-auth-library";
+import { loginUser, googleAuth } from "../controllers/auth.controller";
 import { logoutUser } from "../controllers/auth.controller";
 
 const router = express.Router()
@@ -13,6 +12,8 @@ router.post('/auth/sent-otp', sentOTP)
 
 //Verify OTP and register user
 router.post('/auth/verify-otp', verifyOTP)
+
+router.post('/auth/google', googleAuth)
 
 router.post('/auth/login', loginUser)
 

@@ -1,7 +1,6 @@
 import bcrypt from "bcryptjs";
 import Jwt from "jsonwebtoken";
 import { UserRepository } from "../repositories/user.repositoy";
-import { OAuth2Client } from "google-auth-library";
 
 const JWT_SECRET = process.env.JWT_SECRET || "BeHiredSecret";
 
@@ -63,46 +62,67 @@ export class AuthService {
         plan: user.plan,
         isActive: user.isActive,
         startedAt: user.startedAt,
+        role: user.role,
       },
       token,
     };
   }
 
-  async googleLogin(data: GoogleLoginData) {
-    const { email, firstname, lastname, googleId } = data
-
-    let user = await this.userRepo.findByEmail(email)
-
-    if (user) {
-      if (!user.googleId) {
-        user.googleId = googleId
-        await user.save()
-      }
-    } else {
-      user = await this.userRepo.createUser({
-        firstname: firstname || "User",
-        lastname: lastname || "",
-        email,
-        googleId,
-        isActive: true,
-        startedAt: new Date(),
-        password: undefined,
+  async googleAuth(accessToken: string) {
+    try {
+      const response = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       });
-    }
 
-    const token = Jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "1d" })
+      if (!response.ok) {
+        throw new Error("Failed to authenticate with Google");
+      }
 
-    return {
-      user: {
-        id: user._id,
-        firstname: user.firstname,
-        lastname: user.lastname,
-        email: user.email,
-        plan: user.plan,
-        isActive: user.isActive,
-        startedAt: user.startedAt,
-      },
-      token,
+      const data: any = await response.json();
+      const email = data.email;
+      const firstname = data.given_name || "";
+      const lastname = data.family_name || "";
+
+      if (!email) {
+        throw new Error("No email found in Google account");
+      }
+
+      let user = await this.userRepo.findByEmail(email);
+
+      if (!user) {
+        user = await this.userRepo.createUser({
+          firstname,
+          lastname,
+          email,
+          password: "", // Users signing up with Google won't have a regular password
+          isActive: true,
+          startedAt: new Date(),
+        });
+      }
+
+      if (user.role !== "user") {
+        throw new Error("Invalid account type");
+      }
+
+      const token = Jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "1d" });
+
+      return {
+        user: {
+          id: user._id,
+          firstname: user.firstname,
+          lastname: user.lastname,
+          email: user.email,
+          plan: user.plan,
+          isActive: user.isActive,
+          startedAt: user.startedAt,
+          role: user.role,
+        },
+        token,
+      };
+    } catch (error: any) {
+      throw new Error(error.message || "Google authentication failed");
     }
   }
 

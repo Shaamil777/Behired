@@ -6,6 +6,7 @@ import { sentOTP } from "../../services/otp.service";
 import toast from "react-hot-toast";
 import { googleAuth } from "../../services/auth.service";
 import { useGoogleLogin } from "@react-oauth/google";
+import { setToken, setUser, setRole } from "../../utils/tokenUtils";
 
 interface RegisterFormData {
   firstname: string;
@@ -85,20 +86,21 @@ const RegisterForm: React.FC = () => {
 
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
-        try {
-            toast.loading("Signing in with Google...", { id: "google-register" });
-            const res = await googleAuth(tokenResponse.access_token);
-            toast.success("Google registration successful", { id: "google-register" });
-            
-            localStorage.setItem("token", res.token);
-            localStorage.setItem("user", JSON.stringify(res.user));
-            navigate("/home", { replace: true });
-        } catch (error: any) {
-            toast.error(error.response?.data?.message || "Google registration failed", { id: "google-register" });
-        }
+      try {
+        toast.loading("Signing in with Google...", { id: "google-register" });
+        const res = await googleAuth(tokenResponse.access_token);
+        toast.success("Google registration successful", { id: "google-register" });
+
+        setToken(res.token);
+        setUser(res.user);
+        setRole(res.user.role || "user");
+        navigate("/home", { replace: true });
+      } catch (error: any) {
+        toast.error(error.response?.data?.message || "Google registration failed", { id: "google-register" });
+      }
     },
     onError: () => toast.error("Google registration failed")
-});
+  });
 
   return (
     <div className="w-full max-w-lg p-16 flex flex-col items-center h-full">
@@ -126,11 +128,10 @@ const RegisterForm: React.FC = () => {
                   field.charAt(0).toUpperCase() +
                   field.slice(1).replace("password", " Password")
                 }
-                className={`w-full border-b ${
-                  errors[field]
+                className={`w-full border-b ${errors[field]
                     ? "border-red-500"
                     : "border-gray-300 focus:border-blue-600"
-                } rounded-none px-0 py-3 text-lg placeholder-gray-400 outline-none focus:ring-0 transition duration-150`}
+                  } rounded-none px-0 py-3 text-lg placeholder-gray-400 outline-none focus:ring-0 transition duration-150`}
                 required
                 value={formData[field as keyof RegisterFormData]}
                 onChange={handleChange}
@@ -154,7 +155,7 @@ const RegisterForm: React.FC = () => {
       </div>
 
       <div className="w-full max-w-xs">
-        <GoogleButton onClick={()=>googleLogin()} text="Sign up with Google" />
+        <GoogleButton onClick={() => googleLogin()} text="Sign up with Google" />
       </div>
 
     </div>

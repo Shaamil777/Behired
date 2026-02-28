@@ -1,13 +1,11 @@
 import { Request, Response } from "express";
 import { AuthService } from "../services/auth.service";
 import { OTPService } from "../services/otp.service";
-import { OAuth2Client } from "google-auth-library";
 import { AdminService } from "../services/admin.service";
 
 const adminService = new AdminService()
 const authService = new AuthService()
 const otpService = new OTPService()
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const sentOTP = async (req: Request, res: Response) => {
     try {
@@ -45,6 +43,22 @@ export const loginUser = async (req: Request, res: Response) => {
             user: (await result).user,
             token: (await result).token
         })
+    } catch (error: any) {
+        res.status(400).json({ message: error.message })
+    }
+}
+
+export const googleAuth = async (req: Request, res: Response) => {
+    try {
+        const token = req.body.token
+        if (!token) {
+            return res.status(400).json({
+                message: 'Google token is required',
+            })
+        }
+        const result = await authService.googleAuth(token);
+        return res.status(200).json(result)
+
     } catch (error: any) {
         res.status(400).json({ message: error.message })
     }

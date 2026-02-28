@@ -12,6 +12,7 @@ export interface LoginResponse {
     plan: string;
     isActive: boolean;
     startedAt: string;
+    role?: string;
   };
   token: string;
 }
