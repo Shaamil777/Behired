@@ -48,7 +48,7 @@ export class AuthService {
   async login(email: string, password: string) {
     const user = await this.userRepo.findByEmail(email);
     if (!user || !user.password) throw new Error("Invalid email or password");
-    if (user.role!=="user") throw new Error("Account doesnt exist")
+    if (user.role !== "user") throw new Error("Account doesnt exist")
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) throw new Error("Invalid email or password");
 
@@ -68,42 +68,46 @@ export class AuthService {
     };
   }
 
-  async googleLogin(data:GoogleLoginData){
-    const {email,firstname,lastname,googleId} = data
+  async googleLogin(data: GoogleLoginData) {
+    const { email, firstname, lastname, googleId } = data
 
     let user = await this.userRepo.findByEmail(email)
 
-    if(user){
-      if(!user.googleId){
+    if (user) {
+      if (!user.googleId) {
         user.googleId = googleId
         await user.save()
       }
-    }else{
+    } else {
       user = await this.userRepo.createUser({
-      firstname: firstname || "User",
-      lastname: lastname || "",
-      email,
-      googleId,
-      isActive: true,
-      startedAt: new Date(),
-      password: undefined,
-    });
+        firstname: firstname || "User",
+        lastname: lastname || "",
+        email,
+        googleId,
+        isActive: true,
+        startedAt: new Date(),
+        password: undefined,
+      });
+    }
+
+    const token = Jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "1d" })
+
+    return {
+      user: {
+        id: user._id,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        email: user.email,
+        plan: user.plan,
+        isActive: user.isActive,
+        startedAt: user.startedAt,
+      },
+      token,
+    }
   }
 
-  const token = Jwt.sign({id:user._id},JWT_SECRET,{expiresIn:"1d"})
+  async logout() {
+    return { message: "Logout successful" }
+  }
 
-  return {
-    user:{
-      id:user._id,
-      firstname:user.firstname,
-      lastname: user.lastname,
-      email: user.email,
-      plan: user.plan,
-      isActive: user.isActive,
-      startedAt: user.startedAt,
-    },
-    token,
-  }
-  }
-  
 }

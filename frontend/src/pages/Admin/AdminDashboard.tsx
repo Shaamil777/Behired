@@ -1,4 +1,4 @@
-import React from 'react'
+// unused React import removed
 
 function AdminDashboard() {
   return (

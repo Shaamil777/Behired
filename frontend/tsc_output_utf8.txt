@@ -1,0 +1,8 @@
+﻿src/components/layouts/admin/AdminLayout.tsx(6,3): error TS6133: 'FileText' is declared but its value is never read.
+src/components/layouts/admin/AdminLayout.tsx(7,3): error TS6133: 'BarChart' is declared but its value is never read.
+src/components/layouts/admin/AdminLayout.tsx(8,3): error TS6133: 'CreditCard' is declared but its value is never read.
+src/components/layouts/admin/AdminLayout.tsx(9,3): error TS6133: 'Calendar' is declared but its value is never read.
+src/pages/Admin/AdminDashboard.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/pages/Admin/UserManagement.tsx(2,10): error TS6133: 'Search' is declared but its value is never read.
+src/pages/Admin/UserManagement.tsx(51,9): error TS6133: 'totalPages' is declared but its value is never read.
+src/routes/UserRoutes.tsx(8,7): error TS6133: 'LandingPage' is declared but its value is never read.

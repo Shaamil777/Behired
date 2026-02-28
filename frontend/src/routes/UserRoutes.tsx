@@ -5,7 +5,6 @@ import { PublicRoute } from "./PublicRoute";
 import { ROUTES } from "./routeConfig";
 
 // Lazy load pages for better performance
-const LandingPage = React.lazy(() => import("../pages/User/Landing/LandingPage"));
 const HomePage = React.lazy(() => import("../pages/User/HomePage"));
 const LoginPage = React.lazy(() => import("../pages/User/Auth/LoginPage"));
 const RegisterPage = React.lazy(() => import("../pages/User/Auth/RegisterPage"));

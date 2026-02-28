@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Search, Eye, Ban } from "lucide-react";
+import { Eye, Ban } from "lucide-react";
 import { fetchAllUsers, toggleUserStatus } from "../../services/admin.service";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
@@ -48,7 +48,6 @@ const UserManagement: React.FC = () => {
   });
 
   // Pagination
-  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedUsers = filteredUsers.slice(startIndex, startIndex + itemsPerPage);
 

@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { MessageSquare, User } from "lucide-react"; // icons
 // import { cn } from "@/lib/utils"; // optional helper if you use shadcn/ui or just remove if not
+import { logoutUser } from "@/services/auth.service";
 
 const Navbar: React.FC = () => {
   const location = useLocation();
@@ -45,6 +46,9 @@ const Navbar: React.FC = () => {
               >
                 My Posts
               </Link>
+              <button onClick={logoutUser}>
+                logout
+              </button>
             </div>
 
             {/* Right Icons */}
